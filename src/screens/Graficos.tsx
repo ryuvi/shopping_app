@@ -1,3 +1,4 @@
+// Graficos.tsx
 import React, { JSX, useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
 import { Appbar, Text, Divider, Surface } from "react-native-paper";

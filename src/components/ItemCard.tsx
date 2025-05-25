@@ -1,3 +1,4 @@
+// ItemCard.tsx
 import React, { useEffect, useState } from "react";
 import { Card, Text, Button, Icon } from "react-native-paper";
 import { View, StyleSheet } from "react-native";

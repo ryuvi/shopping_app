@@ -1,3 +1,5 @@
+// Navigation.tsx
+
 import * as React from "react";
 import { BottomNavigation } from "react-native-paper";
 import ListaCompras from "./screens/ListaCompras";

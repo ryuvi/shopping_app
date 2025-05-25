@@ -1,3 +1,4 @@
+// ListaCompras.tsx
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Alert, Animated } from "react-native";
 import {

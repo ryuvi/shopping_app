@@ -1,3 +1,4 @@
+// App.tsx
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "./src/Navigation";
 
