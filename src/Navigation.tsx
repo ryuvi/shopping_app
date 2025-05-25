@@ -5,6 +5,9 @@ import { BottomNavigation } from "react-native-paper";
 import ListaCompras from "./screens/ListaCompras";
 import ListasSalvas from "./screens/ListaSalva";
 import GraficoHistorico from "./screens/Graficos";
+import { FlatList } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import DebugStorageScreen from "./screens/DebugStorageScreen";
 
 const Navigation = () => {
   const [index, setIndex] = React.useState(0);
@@ -22,17 +25,24 @@ const Navigation = () => {
       unfocusedIcon: "history",
     },
     {
-      key: "graphics",
-      title: "Gráficos",
-      focusedIcon: 'chart-line',
-      unfocusedIcon: 'chart-line',
-    },
+    key: "debug",
+    title: "Storage",
+    focusedIcon: "database",
+    unfocusedIcon: "database-outline",
+  },
+    // {
+    //   key: "graphics",
+    //   title: "Gráficos",
+    //   focusedIcon: 'chart-line',
+    //   unfocusedIcon: 'chart-line',
+    // },
   ]);
+
 
   const renderScene = BottomNavigation.SceneMap({
     compras: () => <ListaCompras />,
     recents: () => <ListasSalvas />,
-    graphics: () => <GraficoHistorico />,
+    debug: () => <DebugStorageScreen />,
   });
 
   return (

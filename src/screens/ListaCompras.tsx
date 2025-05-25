@@ -67,6 +67,11 @@ function ListaCompras() {
     }
   };
 
+  const print_storage = async () => {
+    await AsyncStorage.getItem("historico-items").then((res) => console.log(res));
+  }
+
+
   const carregarLista = async () => {
     try {
       const dados = await AsyncStorage.getItem("lista-compras");
