@@ -1,4 +1,4 @@
-name: Expo Prebuild & Gradle APK Build
+name: Gradle APK Build
 
 on:
   workflow_dispatch:
@@ -10,23 +10,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Expo CLI
-        run: npm install -g expo-cli
-
-      - name: Run Expo Prebuild
-        run: expo prebuild --platform android --no-install
-
-      - name: Install native dependencies
-        run: cd android && ./gradlew dependencies
 
       - name: Build APK with Gradle
         run: cd android && ./gradlew assembleRelease
