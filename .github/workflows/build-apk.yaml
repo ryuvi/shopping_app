@@ -27,9 +27,3 @@ jobs:
 
       - name: Build APK
         run: eas build --platform android --profile production --non-interactive
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release.apk
-          path: app/build/outputs/apk/release/app-release.apk
