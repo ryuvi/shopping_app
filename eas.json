@@ -1,9 +1,12 @@
 {
-    "build": {
-        "production": {
-            "android": {
-                "buildType": "apk"
-            }
-        }
+  "cli": {
+    "version": "3.18.1"
+  },
+  "build": {
+    "production": {
+      "android": {
+        "buildType": "apk"
+      }
     }
+  }
 }
