@@ -1,7 +1,4 @@
 {
-  "cli": {
-    "version": "3.18.1"
-  },
   "build": {
     "production": {
       "android": {
