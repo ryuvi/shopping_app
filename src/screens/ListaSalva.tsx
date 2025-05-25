@@ -35,7 +35,6 @@ const ListasSalvas = ({ navigation }: any) => {
   );
 
   return (
-    <PaperProvider>
       <View style={{ flex: 1 }}>
         <Appbar.Header style={{ backgroundColor: '#C8E6C9' }}>
           <Appbar.Content title="Listas Salvas" />
@@ -55,7 +54,6 @@ const ListasSalvas = ({ navigation }: any) => {
           />
         )}
       </View>
-    </PaperProvider>
   );
 };
 

@@ -178,7 +178,6 @@ function ListaCompras() {
   const subtotal = items.reduce((total, item) => total + item.priceFull, 0);
 
   return (
-    <PaperProvider>
       <View style={{ flex: 1 }}>
         <Appbar.Header elevated={true} style={{ backgroundColor: '#C8E6C9' }}>
           <Appbar.Content title={`Lista - ${dataHoje}`} />
@@ -282,7 +281,6 @@ function ListaCompras() {
           Lista salva com sucesso!
         </Snackbar>
       </View>
-    </PaperProvider>
   );
 }
 

@@ -65,7 +65,9 @@ const temaPersonalizado = {
 export default function App() {
   return (
     <SafeAreaProvider>
+<PaperProvider>
       <Navigation />
+</PaperProvider>
     </SafeAreaProvider>
   );
 }
