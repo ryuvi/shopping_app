@@ -1,17 +1,16 @@
 // Navigation.tsx
-
-import * as React from "react";
+import React, { useState } from "react";
 import { BottomNavigation } from "react-native-paper";
 import ListaCompras from "./screens/ListaCompras";
 import ListasSalvas from "./screens/ListaSalva";
-import GraficoHistorico from "./screens/Graficos";
-import { FlatList } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import DebugStorageScreen from "./screens/DebugStorageScreen";
+// import GraficoHistorico from "./screens/Graficos"; // ativar quando for usar
+import { StorageProvider } from "./context/StorageContext";
 
 const Navigation = () => {
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
+  const [index, setIndex] = useState(0);
+
+  const [routes] = useState([
     {
       key: "compras",
       title: "Lista de Compras",
@@ -25,33 +24,35 @@ const Navigation = () => {
       unfocusedIcon: "history",
     },
     {
-    key: "debug",
-    title: "Storage",
-    focusedIcon: "database",
-    unfocusedIcon: "database-outline",
-  },
+      key: "debug",
+      title: "Storage",
+      focusedIcon: "database",
+      unfocusedIcon: "database-outline",
+    },
     // {
     //   key: "graphics",
     //   title: "Gráficos",
-    //   focusedIcon: 'chart-line',
-    //   unfocusedIcon: 'chart-line',
+    //   focusedIcon: "chart-line",
+    //   unfocusedIcon: "chart-line",
     // },
   ]);
-
 
   const renderScene = BottomNavigation.SceneMap({
     compras: () => <ListaCompras />,
     recents: () => <ListasSalvas />,
     debug: () => <DebugStorageScreen />,
+    // graphics: () => <GraficoHistorico />,
   });
 
   return (
-    <BottomNavigation
-      navigationState={{ index, routes }}
-      onIndexChange={setIndex}
-      renderScene={renderScene}
-      barStyle={{ backgroundColor: "#C8E6C9" }}
-    />
+    <StorageProvider>
+      <BottomNavigation
+        navigationState={{ index, routes }}
+        onIndexChange={setIndex}
+        renderScene={renderScene}
+        barStyle={{ backgroundColor: "#C8E6C9" }}
+      />
+    </StorageProvider>
   );
 };
 

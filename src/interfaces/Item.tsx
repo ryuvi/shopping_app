@@ -1,12 +1,10 @@
-// Item.tsx
-export default interface Item {
-  id: number;
+export interface Item {
+  id: string; // UUID
   name: string;
   pricePerItem: number;
   quantity: number;
   priceFull: number;
   isPromotion: boolean;
-  date?: string; // novo campo
-  listName?: string; // novo campo (caso queira múltiplas listas no futuro)
   category?: string;
+  createdAt: string; // ISO timestamp
 }

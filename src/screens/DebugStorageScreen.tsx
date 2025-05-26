@@ -1,34 +1,31 @@
 // src/screens/DebugStorageScreen.tsx
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Text, Card, Divider } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useStorage } from "../context/StorageContext";
 
 export default function DebugStorageScreen() {
-  const [storageData, setStorageData] = useState<Record<string, any>>({});
+  const {
+    listaTemporaria,
+    listas,
+    historicoItems,
+    historicoListas,
+  } = useStorage();
 
-  useEffect(() => {
-    const fetchStorage = async () => {
-      const keys = ["lista-compras", "historico-items"];
-      const data: Record<string, any> = {};
-
-      for (const key of keys) {
-        const value = await AsyncStorage.getItem(key);
-        data[key] = value ? JSON.parse(value) : null;
-      }
-
-      setStorageData(data);
-    };
-
-    fetchStorage();
-  }, []);
+  const storageData = {
+    "lista-temporaria": listaTemporaria,
+    "lista-compras": listas,
+    "historico-items": historicoItems,
+    "historico-listas": historicoListas,
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {Object.entries(storageData).map(([key, value]) => (
         <View key={key} style={styles.section}>
-          <Text variant="titleMedium" style={styles.title}>{key}</Text>
+          <Text variant="titleMedium" style={styles.title}>
+            {key}
+          </Text>
           <Card style={styles.card}>
             <Card.Content>
               <Text selectable>{JSON.stringify(value, null, 2)}</Text>
