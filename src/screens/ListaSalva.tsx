@@ -1,54 +1,49 @@
-import React from "react";
-import { View, FlatList, StyleSheet, TouchableOpacity } from "react-native";
-import { Appbar, Card, Text, Divider } from "react-native-paper";
+import React, { useState } from "react";
+import { View, FlatList } from "react-native";
+import { Divider } from "react-native-paper";
 import { useStorage } from "../context/StorageContext";
+import Header from "../components/ListasSalvas/Header";
+import ListaCard from "../components/ListasSalvas/ListaCard";
+import ListaVazia from "../components/ListasSalvas/ListaVazia";
+import ListaDetalhesModal from "../components/ListasSalvas/ListaDetalhesModal";
 import { Item } from "../interfaces/Item";
 
-const ListasSalvas = ({ navigation }: any) => {
+const ListasSalvas = () => {
   const { listas } = useStorage();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [listaSelecionada, setListaSelecionada] = useState<{
+    nome_da_lista: string;
+    items: Item[];
+  } | null>(null);
 
-  const renderItem = ({ item }: { item: { nome_da_lista: string; items: Item[] } }) => (
-    <TouchableOpacity onPress={() => navigation.navigate("ListaCompras", { lista: item })}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text variant="titleMedium">{item.nome_da_lista}</Text>
-          <Text>Itens: {item.items.length}</Text>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
-  );
+  const abrirModal = (lista: { nome_da_lista: string; items: Item[] }) => {
+    setListaSelecionada(lista);
+    setModalVisible(true);
+  };
 
   return (
     <View style={{ flex: 1 }}>
-      <Appbar.Header style={{ backgroundColor: "#C8E6C9" }}>
-        <Appbar.Content title="Listas Salvas" />
-      </Appbar.Header>
-
+      <Header />
       {listas.length === 0 ? (
-        <View style={styles.empty}>
-          <Text>Nenhuma lista salva ainda.</Text>
-        </View>
+        <ListaVazia />
       ) : (
         <FlatList
           data={listas}
           keyExtractor={(item) => item.nome_da_lista}
-          renderItem={renderItem}
+          renderItem={({ item }) => (
+            <ListaCard item={item} onPress={() => abrirModal(item)} />
+          )}
           ItemSeparatorComponent={() => <Divider />}
           contentContainerStyle={{ padding: 8 }}
         />
       )}
+      <ListaDetalhesModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        lista={listaSelecionada}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 8,
-  },
-  empty: {
-    padding: 20,
-    alignItems: "center",
-  },
-});
 
 export default ListasSalvas;

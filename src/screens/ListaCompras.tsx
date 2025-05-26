@@ -1,117 +1,59 @@
-// ListaCompras.tsx
+// screens/ListaCompras.tsx
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, Animated } from "react-native";
-import {
-  Appbar,
-  Modal,
-  Portal,
-  Text,
-  TextInput,
-  Button,
-  Switch,
-  AnimatedFAB,
-  Snackbar,
-  HelperText,
-} from "react-native-paper";
+import { View, Alert } from "react-native";
+import { Snackbar, Portal, useTheme } from "react-native-paper";
 import { Item } from "../interfaces/Item";
-import ItemCard from "../components/ItemCard";
 import { useStorage } from "../context/StorageContext";
+import ListaHeader from "../components/ListaCompras/ListaHeader";
+import ListaItemList from "../components/ListaCompras/ListaItemList";
+import ListaModal from "../components/ListaCompras/ListaModal";
+import ListaSubtotal from "../components/ListaCompras/ListaSubtotal";
+import ListaFAB from "../components/ListaCompras/ListaFAB";
+import ConfigModal from "../components/ListaCompras/ConfigModal";
 
-const CATEGORIAS = [
-  "Higiene Pessoal",
-  "Mantimentos",
-  "Horti-fruti",
-  "Carnes",
-  "Limpeza",
-  "Outros",
-];
-
-function ListaCompras() {
+const ListaCompras = () => {
   const {
     listaTemporaria,
     adicionarItemTemporario,
     salvarListaFinal,
     limparTemporaria,
+    salvarTemporaria
   } = useStorage();
 
   const [items, setItems] = useState<Item[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
-
-  // Formulário
-  const [name, setName] = useState("");
-  const [pricePerItem, setPricePerItem] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [isPromotion, setIsPromotion] = useState(false);
-  const [category, setCategory] = useState("");
-
-  const [nomeLista, setNomeLista] = useState("Lista do Dia");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [nomeLista, setNomeLista] = useState("Lista do Dia");
+  const [limite, setLimite] = useState<number>(500);
+  const [configVisible, setConfigVisible] = useState<boolean>(false);
 
   useEffect(() => {
     setItems(listaTemporaria);
   }, [listaTemporaria]);
 
   const abrirModal = (item?: Item) => {
-    if (item) {
-      setEditingItem(item);
-      setName(item.name);
-      setPricePerItem(item.pricePerItem.toString());
-      setQuantity(item.quantity.toString());
-      setIsPromotion(item.isPromotion);
-      setCategory(item.category || "");
-    } else {
-      setEditingItem(null);
-      setName("");
-      setPricePerItem("");
-      setQuantity("");
-      setIsPromotion(false);
-      setCategory("");
-    }
+    setEditingItem(item || null);
     setModalVisible(true);
   };
 
-  const salvarItem = async () => {
-    const novoItem: Item = {
-      id: editingItem ? editingItem.id : "",
-      name,
-      pricePerItem: parseFloat(pricePerItem),
-      quantity: parseInt(quantity),
-      priceFull: parseFloat(pricePerItem) * parseInt(quantity),
-      isPromotion,
-      category,
-      createdAt: new Date().toISOString(),
-    };
+  const abrirConfigModal = () => setConfigVisible(true); // 👈 função correta
 
+  const salvarItem = async (item: Item) => {
     const novaLista = editingItem
-      ? items.map((i) => (i.id === editingItem.id ? novoItem : i))
-      : [...items, novoItem];
+      ? items.map((i) => (i.id === editingItem.id ? item : i))
+      : [...items, item];
 
     setItems(novaLista);
-
-    if (!editingItem) {
-      await adicionarItemTemporario(novoItem);
-    }
-
+    if (!editingItem) await adicionarItemTemporario(item);
     setModalVisible(false);
     setEditingItem(null);
-    setName("");
-    setPricePerItem("");
-    setQuantity("");
-    setIsPromotion(false);
-    setCategory("");
   };
 
   const salvarLista = async () => {
     try {
-      const lista = {
-        nome_da_lista: nomeLista,
-        items,
-        criadaEm: new Date().toISOString(),
-      };
-
-      await salvarListaFinal(lista);
-      await limparTemporaria();
+      await salvarListaFinal({ nome_da_lista: nomeLista, items });
+      // await limparTemporaria();
       setSnackbarVisible(true);
     } catch (e) {
       console.error("Erro ao salvar lista final:", e);
@@ -124,112 +66,46 @@ function ListaCompras() {
       {
         text: "Remover",
         style: "destructive",
-        onPress: () => {
-          const nova = items.filter((item) => item.id !== itemId);
-          setItems(nova);
+        onPress: async () => {
+          const novaLista = items.filter((item) => item.id !== itemId);
+          setItems(novaLista);
+          try {
+            await salvarTemporaria(novaLista); // Atualiza o AsyncStorage e o SQLite
+          } catch (error) {
+            console.error("Erro ao salvar lista após remoção:", error);
+          }
         },
       },
     ]);
   };
 
-  const dataHoje = new Date().toLocaleDateString("pt-BR");
   const subtotal = items.reduce((total, item) => total + item.priceFull, 0);
 
   return (
+    <Portal.Host>
     <View style={{ flex: 1 }}>
-      <Appbar.Header elevated style={{ backgroundColor: "#C8E6C9" }}>
-        <Appbar.Content title={`Lista - ${dataHoje}`} />
-        <Appbar.Action icon="content-save" onPress={salvarLista} />
-      </Appbar.Header>
-
-      <Animated.FlatList
-        data={items}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ItemCard
-            item={item}
-            onEdit={() => abrirModal(item)}
-            onDelete={() => removerItem(item.id)}
-          />
-        )}
+      <ListaHeader
+        title={`Lista - ${new Date().toLocaleDateString("pt-BR")}`}
+        onSave={salvarLista}
       />
-
-      <Portal>
-        <Modal
-          visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
-          contentContainerStyle={styles.modalContainer}
-        >
-          <Text style={styles.modalTitle}>
-            {editingItem ? "Editar Item" : "Adicionar Item"}
-          </Text>
-
-          <TextInput
-            label="Nome"
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-            placeholder="Ex: Shampoo"
-            mode="outlined"
-          />
-          <TextInput
-            label="Preço Unitário"
-            value={pricePerItem}
-            onChangeText={setPricePerItem}
-            keyboardType="numeric"
-            style={styles.input}
-            mode="outlined"
-            placeholder="Ex: 5.99"
-          />
-          <TextInput
-            label="Quantidade"
-            value={quantity}
-            onChangeText={setQuantity}
-            keyboardType="numeric"
-            style={styles.input}
-            mode="outlined"
-            placeholder="Ex: 2"
-          />
-          <TextInput
-            label="Categoria"
-            value={category}
-            onChangeText={setCategory}
-            style={styles.input}
-            placeholder="Ex: Higiene Pessoal"
-            mode="outlined"
-          />
-          <HelperText type="info">
-            Categorias: {CATEGORIAS.join(", ")}
-          </HelperText>
-
-          <View style={styles.switchContainer}>
-            <Text>Promoção?</Text>
-            <Switch
-              value={isPromotion}
-              onValueChange={() => setIsPromotion(!isPromotion)}
-            />
-          </View>
-          <Button onPress={salvarItem} mode="contained" style={{ marginTop: 10 }}>
-            {editingItem ? "Atualizar" : "Salvar"}
-          </Button>
-        </Modal>
-      </Portal>
-
-      <AnimatedFAB
-        icon="plus"
+      <ListaItemList items={items} onEdit={abrirModal} onDelete={removerItem} />
+      <ListaModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onSave={salvarItem}
+        item={editingItem}
+      />
+      <ConfigModal
+        visible={configVisible}
+        onDismiss={() => setConfigVisible(false)}
+        limite={limite}
+        setLimite={setLimite}
+      />
+      <ListaFAB
         onPress={() => abrirModal()}
-        label="Adicionar"
-        extended={false}
-        animateFrom="right"
-        style={styles.fab}
+        onConfig={abrirConfigModal} // ✅ Corrigido aqui
       />
-
-      <View style={styles.subtotalContainer}>
-        <Text style={styles.subtotalText}>
-          Subtotal: R$ {subtotal.toFixed(2)}
-        </Text>
-      </View>
-
+      <ListaSubtotal subtotal={subtotal} limite={limite} />
       <Snackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
@@ -238,46 +114,8 @@ function ListaCompras() {
         Lista salva com sucesso!
       </Snackbar>
     </View>
+    </Portal.Host>
   );
-}
-
-const styles = StyleSheet.create({
-  fab: {
-    position: "absolute",
-    right: 16,
-    bottom: 72,
-    backgroundColor: "#AED581",
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    margin: 20,
-    borderRadius: 8,
-  },
-  modalTitle: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
-  input: {
-    marginBottom: 10,
-  },
-  switchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 10,
-  },
-  subtotalContainer: {
-    padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-    backgroundColor: "#DCEDC8",
-    alignItems: "flex-end",
-  },
-  subtotalText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
+};
 
 export default ListaCompras;

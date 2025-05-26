@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SQLite from "expo-sqlite";
 import { Item } from "../interfaces/Item";
 import { Lista } from "../interfaces/Lista";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 
 type StorageContextType = {
   listaTemporaria: Item[];
@@ -17,6 +17,7 @@ type StorageContextType = {
   salvarHistoricoItem: (item: Item) => Promise<void>;
   carregarDados: () => Promise<void>;
   limparTemporaria: () => Promise<void>;
+  salvarTemporaria: (lista: Item[]) => Promise<void>;
 };
 
 const StorageContext = createContext<StorageContextType | null>(null);
@@ -220,7 +221,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const novoItem: Item = { 
         ...item,
-        id: item.id || uuidv4(),
+        id: item.id || uuid.v4(),
         createdAt: item.createdAt || new Date().toISOString(),
         priceFull: item.priceFull || (item.pricePerItem * item.quantity)
       };
@@ -462,7 +463,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const itemCompleto: Item = {
         ...item,
-        id: uuidv4(),
+        id: uuid.v4(),
         createdAt: new Date().toISOString(),
         priceFull: item.pricePerItem * item.quantity
       };
@@ -487,6 +488,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         salvarHistoricoItem,
         carregarDados: () => carregarDados(),
         limparTemporaria,
+        salvarTemporaria,
       }}
     >
       {children}

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { BottomNavigation } from "react-native-paper";
 import ListaCompras from "./screens/ListaCompras";
 import ListasSalvas from "./screens/ListaSalva";
-import DebugStorageScreen from "./screens/DebugStorageScreen";
+// import DebugStorageScreen from "./screens/DebugStorageScreen";
 // import GraficoHistorico from "./screens/Graficos"; // ativar quando for usar
 import { StorageProvider } from "./context/StorageContext";
 
@@ -23,12 +23,12 @@ const Navigation = () => {
       focusedIcon: "history",
       unfocusedIcon: "history",
     },
-    {
-      key: "debug",
-      title: "Storage",
-      focusedIcon: "database",
-      unfocusedIcon: "database-outline",
-    },
+    // {
+    //   key: "debug",
+    //   title: "Storage",
+    //   focusedIcon: "database",
+    //   unfocusedIcon: "database-outline",
+    // },
     // {
     //   key: "graphics",
     //   title: "Gráficos",
@@ -40,7 +40,7 @@ const Navigation = () => {
   const renderScene = BottomNavigation.SceneMap({
     compras: () => <ListaCompras />,
     recents: () => <ListasSalvas />,
-    debug: () => <DebugStorageScreen />,
+    // debug: () => <DebugStorageScreen />,
     // graphics: () => <GraficoHistorico />,
   });
 
@@ -50,7 +50,7 @@ const Navigation = () => {
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}
-        barStyle={{ backgroundColor: "#C8E6C9" }}
+        // barStyle={{ backgroundColor: "#C8E6C9" }}
       />
     </StorageProvider>
   );
