@@ -1,11 +1,11 @@
 // Navigation.tsx
 import React, { useState } from "react";
 import { BottomNavigation } from "react-native-paper";
-import ListaCompras from "./screens/ListaCompras";
-import ListasSalvas from "./screens/ListaSalva";
+import ListaCompras from "./screens/ListaCompras/ListaCompras";
+import ListasSalvas from "./screens/ListaSalva/ListasSalvas";
+import Despensa from "./screens/Despensa/Despensa";
 // import DebugStorageScreen from "./screens/DebugStorageScreen";
 // import GraficoHistorico from "./screens/Graficos"; // ativar quando for usar
-import { StorageProvider } from "./context/StorageContext";
 
 const Navigation = () => {
   const [index, setIndex] = useState(0);
@@ -23,36 +23,26 @@ const Navigation = () => {
       focusedIcon: "history",
       unfocusedIcon: "history",
     },
-    // {
-    //   key: "debug",
-    //   title: "Storage",
-    //   focusedIcon: "database",
-    //   unfocusedIcon: "database-outline",
-    // },
-    // {
-    //   key: "graphics",
-    //   title: "Gráficos",
-    //   focusedIcon: "chart-line",
-    //   unfocusedIcon: "chart-line",
-    // },
+    {
+      key: "store",
+      title: "Despensa",
+      focusedIcon: "archive",
+      unfocusedIcon: "archive-outline",
+    }
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     compras: () => <ListaCompras />,
     recents: () => <ListasSalvas />,
-    // debug: () => <DebugStorageScreen />,
-    // graphics: () => <GraficoHistorico />,
+    store: () => <Despensa />,
   });
 
   return (
-    <StorageProvider>
-      <BottomNavigation
-        navigationState={{ index, routes }}
-        onIndexChange={setIndex}
-        renderScene={renderScene}
-        // barStyle={{ backgroundColor: "#C8E6C9" }}
-      />
-    </StorageProvider>
+    <BottomNavigation
+      navigationState={{ index, routes }}
+      onIndexChange={setIndex}
+      renderScene={renderScene}
+    />
   );
 };
 

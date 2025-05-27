@@ -1,5 +1,7 @@
+// ConfigModal.tsx
+
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Modal, Portal, Text, TextInput, Button } from "react-native-paper";
 
 interface Props {
@@ -28,9 +30,14 @@ export default function ConfigModal({ visible, onDismiss, limite, setLimite }: P
           onChangeText={handleChange}
           mode="outlined"
         />
-        <Button onPress={onDismiss} mode="contained" style={{ marginTop: 10 }}>
-          Salvar
-        </Button>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <Button onPress={onDismiss} mode="outlined" style={{ marginTop: 10 }}>
+            Cancelar
+          </Button>
+          <Button onPress={onDismiss} mode="contained" style={{ marginTop: 10, marginLeft: 10 }}>
+            Salvar
+          </Button>
+        </View>
       </Modal>
     </Portal>
   );

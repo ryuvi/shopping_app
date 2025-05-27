@@ -1,5 +1,7 @@
+// ListaModal.tsx
+
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import {
   Modal,
   Portal,
@@ -9,8 +11,8 @@ import {
   Switch,
   HelperText,
 } from "react-native-paper";
-import { Item } from "../../interfaces/Item";
-import { fontSizes } from "../Themes/Typography";
+import { Item } from "../../shared/interfaces/Item";
+import { fontSizes } from "../../shared/ui/Typography";
 
 const CATEGORIAS = [
   "Higiene Pessoal",
@@ -28,6 +30,17 @@ interface Props {
   item: Item | null;
 }
 
+// Função para normalizar nomes (primeira letra maiúscula e remover espaços extras)
+const normalizeText = (text: string) => {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
 export default function ListaModal({
   visible,
   onDismiss,
@@ -39,32 +52,52 @@ export default function ListaModal({
   const [quantity, setQuantity] = useState("");
   const [isPromotion, setIsPromotion] = useState(false);
   const [category, setCategory] = useState("");
+  const [peso, setPeso] = useState("1");
 
   useEffect(() => {
     if (item) {
-      setName(item.name);
-      setPricePerItem(item.pricePerItem.toString().replace('.', ','));
+      setName(item.nome);
+      setPricePerItem(item.price.toString().replace(".", ","));
       setQuantity(item.quantity.toString());
-      setIsPromotion(item.isPromotion);
+      setIsPromotion(item.isPromocao || false);
       setCategory(item.category || "");
+      setPeso(item.peso?.toString().replace(".", ",") || "1");
     } else {
       setName("");
       setPricePerItem("");
       setQuantity("");
       setIsPromotion(false);
       setCategory("");
+      setPeso("1");
     }
   }, [item]);
 
   const handleSubmit = () => {
+
+    if (!name.trim()) {
+      Alert.alert('Erro', "O nome do item é obrigatório");
+      return;
+    }
+
+    if (!pricePerItem || isNaN(parseFloat(pricePerItem.replace(',', '.')))) {
+      Alert.alert('Erro', "Preço inválido");
+      return;
+    }
+
+    const formatNumber = (value: string) => {
+      if (value.includes(','))
+        return parseFloat(value.replace('.', '').replace(',', '.'))
+      return parseFloat(value)
+    }
+
     const novoItem: Item = {
       id: item?.id || "",
-      name,
-      pricePerItem: parseFloat(pricePerItem.replace('.', '').replace(',', '.')),
-      quantity: parseInt(quantity),
-      priceFull: parseFloat(pricePerItem) * parseInt(quantity),
-      isPromotion,
-      category,
+      nome: normalizeText(name),
+      price: formatNumber(pricePerItem) || 0,
+      quantity: parseInt(quantity) || 1,
+      isPromocao: isPromotion,
+      category: normalizeText(category),
+      peso: formatNumber(peso) || 1,
       createdAt: item?.createdAt || new Date().toISOString(),
     };
 
@@ -103,18 +136,29 @@ export default function ListaModal({
             style={styles.input}
             mode="outlined"
           />
-          <TextInput
-            label="Quantidade"
-            placeholder="2"
-            value={quantity}
-            onChangeText={setQuantity}
-            keyboardType="numeric"
-            style={styles.input}
-            mode="outlined"
-          />
+          <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+            <TextInput
+              label="Quantidade"
+              placeholder="2"
+              value={quantity}
+              onChangeText={setQuantity}
+              keyboardType="numeric"
+              style={[styles.input, { flex: 1, marginRight: 5 }]}
+              mode="outlined"
+            />
+            <TextInput
+              label="Peso (kg)"
+              placeholder="0,300"
+              value={peso}
+              onChangeText={setPeso}
+              keyboardType="numeric"
+              style={[styles.input, { flex: 1, marginLeft: 5 }]}
+              mode="outlined"
+            />
+          </View>
           <TextInput
             label="Categoria"
-            placeholder="Horti-Fruit"
+            placeholder="Horti-fruti"
             value={category}
             onChangeText={setCategory}
             style={styles.input}
