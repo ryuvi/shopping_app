@@ -25,6 +25,7 @@
     "expo-splash-screen": "~0.30.8",
     "expo-sqlite": "~15.2.10",
     "expo-status-bar": "~2.2.3",
+    "expo-system-ui": "^5.0.7",
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-chart-kit": "^6.12.0",

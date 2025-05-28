@@ -1,4 +1,4 @@
-package com.hero.compras
+package com.hero.meuguiadecompras
 
 import android.app.Application
 import android.content.res.Configuration
