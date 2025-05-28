@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e17a5c64-4757-475f-b2b6-0fdcb9ad8f3f",
+  "id": "c9792d72-cb64-4860-8177-8030e172adcb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "despensa": {
@@ -48,7 +48,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": false
+          "default": 0
         },
         "criado_em": {
           "name": "criado_em",
@@ -115,7 +115,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": false
+          "default": 0
         },
         "criado_em": {
           "name": "criado_em",

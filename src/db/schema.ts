@@ -3,48 +3,41 @@ import {
   text,
   primaryKey,
   integer,
-  real
+  real,
 } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 
+// Listas de Compras
 export const listas = sqliteTable("listas", {
   id: text("id").primaryKey(),
   nome: text("nome").notNull(),
   createdAt: text("criada_em").notNull(),
 });
 
-export const despensa = sqliteTable(
-  "despensa",
-  {
-    id: text("id").primaryKey(),
-    name: text("name").notNull(),
-    quantity: integer("quantity").notNull(),
-    peso: real('peso').notNull(),
-    category: text("category").notNull(),
-    isAberto: integer("aberto", { mode: 'boolean' }).notNull().default(false),
-    createdAt: text("criado_em").notNull(),
-  }
-)
+// Despensa
+export const despensa = sqliteTable("despensa", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  quantity: integer("quantity").notNull(),
+  peso: real("peso").notNull(),
+  category: text("category").notNull(),
+  isAberto: integer("aberto").notNull().default(0), // 0 = false, 1 = true
+  createdAt: text("criado_em").notNull(),
+});
 
-export const testTable = sqliteTable(
-  "teste",
-  {
-    id: integer("id").primaryKey(),
-    nome: text("nome").notNull(),
-  }
-)
-
+// Itens
 export const itens = sqliteTable("itens", {
   id: text("id").primaryKey(),
   nome: text("nome").notNull(),
   quantity: integer("quantidade").notNull(),
   price: real("preco").notNull(),
-  peso: real('peso').notNull(),
+  peso: real("peso").notNull(),
   category: text("categoria").notNull(),
-  isPromocao: integer("promocao", { mode: 'boolean' }).notNull().default(false),
+  isPromocao: integer("promocao").notNull().default(0), // 0 = false, 1 = true
   createdAt: text("criado_em").notNull(),
 });
 
+// Tabela intermediária lista-itens
 export const listaItens = sqliteTable(
   "lista_itens",
   {
@@ -78,10 +71,8 @@ export const listaItensRelations = relations(listaItens, ({ one }) => ({
   }),
 }));
 
-// Compras
+// Tipos
 export type Listas = typeof listas.$inferSelect;
 export type Itens = typeof itens.$inferSelect;
 export type ListaItens = typeof listaItens.$inferSelect;
-
-// Armazenado
-// export type Despensa = typeof despensa.$inferSelect;
+export type Despensa = typeof despensa.$inferSelect;

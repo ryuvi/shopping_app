@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "compras",
-    "slug": "compras",
+    "name": "Meu Guia de Compras",
+    "slug": "Meu Guia de Compras",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/icon-1.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/splash-1.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,9 +16,9 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.hero.compras",
+      "package": "com.hero.meuguiadecompras",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
+        "foregroundImage": "./assets/adaptive-icon-1.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true

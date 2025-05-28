@@ -11,7 +11,7 @@ import {
   Switch,
   HelperText,
 } from "react-native-paper";
-import { Item } from "../../shared/interfaces/Item";
+import { Itens } from "@db/schema";
 import { fontSizes } from "../../shared/ui/Typography";
 
 const CATEGORIAS = [
@@ -26,8 +26,8 @@ const CATEGORIAS = [
 interface Props {
   visible: boolean;
   onDismiss: () => void;
-  onSave: (item: Item) => void;
-  item: Item | null;
+  onSave: (item: Itens) => void;
+  item: Itens | null;
 }
 
 // Função para normalizar nomes (primeira letra maiúscula e remover espaços extras)
@@ -59,7 +59,7 @@ export default function ListaModal({
       setName(item.nome);
       setPricePerItem(item.price.toString().replace(".", ","));
       setQuantity(item.quantity.toString());
-      setIsPromotion(item.isPromocao || false);
+      setIsPromotion(item.isPromocao === 1 ? true : false);
       setCategory(item.category || "");
       setPeso(item.peso?.toString().replace(".", ",") || "1");
     } else {
@@ -90,12 +90,12 @@ export default function ListaModal({
       return parseFloat(value)
     }
 
-    const novoItem: Item = {
+    const novoItem: Itens = {
       id: item?.id || "",
       nome: normalizeText(name),
       price: formatNumber(pricePerItem) || 0,
       quantity: parseInt(quantity) || 1,
-      isPromocao: isPromotion,
+      isPromocao: isPromotion ? 1 : 0,
       category: normalizeText(category),
       peso: formatNumber(peso) || 1,
       createdAt: item?.createdAt || new Date().toISOString(),

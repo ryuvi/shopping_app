@@ -32,7 +32,7 @@ export function useListaCompras() {
     if (nomeJaExiste) {
       Alert.alert(
         "Lista já existe",
-        "Ja existe uma lista com esse nome. O que deseja fazer?",
+        "Já existe uma lista com esse nome. O que deseja fazer?",
         [
           {
             text: "Sobrescrever",
@@ -61,7 +61,6 @@ export function useListaCompras() {
 
   const sobrescreverListaExistente = async (nome: string) => {
     try {
-      // 1. Encontra a lista existente
       const listaExistente = await db
         .select()
         .from(schema.listas)
@@ -69,12 +68,10 @@ export function useListaCompras() {
         .get();
 
       if (listaExistente) {
-        // 2. Remove os itens antigos
         await db
           .delete(schema.listaItens)
           .where(eq(schema.listaItens.listaId, listaExistente.id));
 
-        // 3. Adiciona os novos itens
         const relations = items.map((item) => ({
           listaId: listaExistente.id,
           itemId: item.id,
@@ -83,7 +80,6 @@ export function useListaCompras() {
         await db.insert(schema.listaItens).values(relations);
         setSnackbarVisible(true);
 
-        // 4. Limpa a lista temporária
         await db
           .delete(schema.listaItens)
           .where(eq(schema.listaItens.listaId, tempListaId));
@@ -119,7 +115,7 @@ export function useListaCompras() {
 
       const itensConvertidos = resultado.map((row) => ({
         ...row.itens,
-        isPromocao: !!row.itens.isPromocao,
+        isPromocao: row.itens.isPromocao, // converte INTEGER para boolean
       }));
 
       setItems(itensConvertidos);
@@ -133,8 +129,8 @@ export function useListaCompras() {
   }, []);
 
   useEffect(() => {
-    if (modalVisible === false) {
-      carregarTemporaria(); // Reutiliza a função já existente
+    if (!modalVisible) {
+      carregarTemporaria();
     }
   }, [modalVisible, tempListaId]);
 
@@ -146,31 +142,22 @@ export function useListaCompras() {
   const abrirConfigModal = () => setConfigVisible(true);
 
   const salvarItem = async (item: Itens) => {
-    console.log("Teste");
-    // Validação básica
     if (!item.nome || !item.price) {
       Alert.alert("Erro", "Nome e preço são obrigatórios");
       return;
     }
 
-    console.log("ALA");
-    console.warn(editingItem);
-
     const id = editingItem?.id || uuid.v4();
-    console.log(id);
-    console.log("OASFKLDSF");
+
     const novoItem: Itens = {
       ...item,
       id,
       peso: item.peso ?? 0,
-      isPromocao: item.isPromocao ?? false,
+      isPromocao: item.isPromocao ? 1 : 0, // converte boolean para INTEGER
       createdAt: new Date().toISOString(),
     };
 
-    console.log("Ola");
-
     try {
-      // Usando transação para garantir atomicidade
       await db.transaction(async (tx) => {
         if (editingItem) {
           await tx
@@ -185,9 +172,7 @@ export function useListaCompras() {
           });
         }
       });
-      console.log("AAAA");
 
-      // Atualização otimista do estado
       setItems((prevItems) =>
         editingItem
           ? prevItems.map((i) => (i.id === id ? novoItem : i))
@@ -197,7 +182,6 @@ export function useListaCompras() {
       setModalVisible(false);
       setEditingItem(null);
 
-      // Recarrega os itens do banco para garantir sincronização
       const resultado = await db
         .select()
         .from(schema.listaItens)
@@ -207,7 +191,7 @@ export function useListaCompras() {
 
       const itensAtualizados = resultado.map((row) => ({
         ...row.itens,
-        isPromocao: !!row.itens.isPromocao,
+        isPromocao: row.itens.isPromocao,
       }));
 
       setItems(itensAtualizados);
@@ -248,10 +232,8 @@ export function useListaCompras() {
       }));
 
       await db.insert(schema.listaItens).values(relations);
-
       setSnackbarVisible(true);
 
-      // limpa a lista temporária
       await db
         .delete(schema.listaItens)
         .where(eq(schema.listaItens.listaId, tempListaId));

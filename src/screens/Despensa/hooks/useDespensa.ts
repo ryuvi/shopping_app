@@ -1,9 +1,10 @@
+// useDespensa.ts
 import { useState, useEffect, useCallback } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { eq } from "drizzle-orm";
 import * as schema from "@db/schema";
-import uuid from 'react-native-uuid'
+import uuid from "react-native-uuid";
 
 export interface DespensaItem {
   id: string;
@@ -11,7 +12,7 @@ export interface DespensaItem {
   quantity: number;
   peso: number;
   category: string;
-  isAberto: boolean;
+  isAberto: number; // Agora é 0 ou 1
   createdAt: string;
 }
 
@@ -41,8 +42,14 @@ export const useDespensa = (): UseDespensaReturn => {
     try {
       setLoading(true);
       const result = await db.select().from(schema.despensa).all();
-      setItems(result);
-      const categorias = [...new Set(result.map((item) => item.category))];
+
+      const parsedItems = result.map((item) => ({
+        ...item,
+        isAberto: item.isAberto ? 1 : 0, // Garante que isAberto sempre seja 0 ou 1
+      }));
+
+      setItems(parsedItems);
+      const categorias = [...new Set(parsedItems.map((item) => item.category))];
       setCategories(categorias);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Erro ao carregar itens"));
@@ -61,14 +68,13 @@ export const useDespensa = (): UseDespensaReturn => {
         setLoading(true);
         const newItem = {
           ...item,
-          id: uuid.v4(),
+          id: uuid.v4() as string,
           createdAt: new Date().toISOString(),
+          isAberto: item.isAberto ? 1 : 0,
         };
-
         await db.insert(schema.despensa).values(newItem).run();
         await loadItems();
       } catch (err) {
-        console.error(err)
         setError(err instanceof Error ? err : new Error("Erro ao adicionar item"));
         throw err;
       }
@@ -80,9 +86,15 @@ export const useDespensa = (): UseDespensaReturn => {
     async (id: string, updates: Partial<DespensaItem>) => {
       try {
         setLoading(true);
+
+        const updatedData = {
+          ...updates,
+          isAberto: updates.isAberto !== undefined ? (updates.isAberto ? 1 : 0) : undefined,
+        };
+
         await db
           .update(schema.despensa)
-          .set(updates)
+          .set(updatedData)
           .where(eq(schema.despensa.id, id))
           .run();
         await loadItems();
@@ -117,9 +129,10 @@ export const useDespensa = (): UseDespensaReturn => {
         setLoading(true);
         const item = items.find((i) => i.id === id);
         if (item) {
+          const newStatus = item.isAberto ? 0 : 1;
           await db
             .update(schema.despensa)
-            .set({ isAberto: !item.isAberto })
+            .set({ isAberto: newStatus })
             .where(eq(schema.despensa.id, id))
             .run();
           await loadItems();
@@ -140,7 +153,7 @@ export const useDespensa = (): UseDespensaReturn => {
           .from(schema.despensa)
           .where(eq(schema.despensa.id, id))
           .get();
-        return result;
+        return result ? { ...result, isAberto: result.isAberto ? 1 : 0 } : undefined;
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Erro ao buscar item por ID"));
         throw err;

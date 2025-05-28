@@ -1,76 +1,45 @@
-import { List, Text } from "react-native-paper";
+// DespensaLista.tsx
+import { Animated, View } from "react-native";
+import { Card, Chip, Text, useTheme } from "react-native-paper";
 import { DespensaItem } from "../hooks/useDespensa";
+import { fontSizes } from "@/screens/shared/ui/Typography";
 
 interface Props {
   items: DespensaItem[];
-  expanded: Record<string, boolean>;
-  onToggleAccordion: (category: string) => void;
-  onToggleStatus: (id: string) => void;
+  handleEditItem: (id: string) => void;
 }
+
 
 export default function DespensaLista({
   items,
-  expanded,
-  onToggleAccordion,
-  onToggleStatus,
+  handleEditItem,
 }: Props) {
 
+  const {colors} = useTheme()
+
   return (
-    <List.Section>
-      {items.map(item => (
-        <List.Item
-          key={item.id}
-          title={`${item.name} - ${item.quantity} ${item.peso ? `(${item.peso}kg)` : ""}`}
-          description={item.isAberto ? "Aberto" : "Fechado"}
-          left={props => (
-            <List.Icon
-              {...props}
-              icon={item.isAberto ? "checkbox-marked-circle" : "checkbox-blank-circle-outline"}
-            />
-          )}
-          onPress={() => onToggleStatus(item.id)}
-        />
-      ))}
-    </List.Section>
-  )
-
-
-  // const categories = [...new Set(items.map(item => item.category))];
-
-  // return (
-  //   <List.Section>
-  //     {categories.map(category => {
-  //       const filteredItems = items.filter(item => item.category === category);
-  //       return (
-  //         <List.Accordion
-  //           key={category}
-  //           title={category}
-  //           expanded={expanded[category] || false}
-  //           onPress={() => onToggleAccordion(category)}
-  //         >
-  //           {expanded[category] &&
-  //             filteredItems.map(item => (
-  //               <List.Item
-  //                 key={item.id}
-  //                 title={`${item.name} - ${item.quantity} ${item.peso ? `(${item.peso}kg)` : ""}`}
-  //                 description={item.isAberto ? "Aberto" : "Fechado"}
-  //                 left={props => (
-  //                   <List.Icon
-  //                     {...props}
-  //                     icon={item.isAberto ? "checkbox-marked-circle" : "checkbox-blank-circle-outline"}
-  //                   />
-  //                 )}
-  //                 onPress={() => onToggleStatus(item.id)}
-  //                 right={() => (
-  //                   <Text style={{ alignSelf: "center" }}>
-  //                     {item.quantity}x
-  //                   </Text>
-  //                 )}
-  //               />
-  //             ))}
-  //         </List.Accordion>
-  //       );
-  //     })}
-  //   </List.Section>
-  // );
+    <Animated.FlatList
+      data={items}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={{ padding: 12 }}
+      renderItem={({ item }) => (
+        <Card
+          style={{ marginBottom: 10 }}
+          onPress={() => handleEditItem(item.id)}
+        >
+          <Card.Content>
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={{ fontSize: fontSizes.medium, fontWeight: "bold" }}>
+              {item.name} - {item.quantity}x{item.peso ? ` - ${item.peso}kg` : ""}
+            </Text>
+            <Chip  mode="flat">{item.category}</Chip>
+            </View>
+            <Text style={{ fontSize: fontSizes.normal, color: "#666" }}>
+              {item.isAberto ? "Aberto" : "Fechado"}
+            </Text>
+          </Card.Content>
+        </Card>
+      )}
+    />
+  );
 }

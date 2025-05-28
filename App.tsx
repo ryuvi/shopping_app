@@ -10,10 +10,13 @@ import {
   CustomLightTheme,
   CustomDarkTheme,
 } from "./src/screens/shared/ui/CustomTheme";
+import { useSQLiteContext } from "expo-sqlite";
 import * as SplashScreen from "expo-splash-screen";
 import { Text } from "react-native-paper";
 
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
+import { useEffect } from "react";
+import Teste from './src/tempComp'
 
 // Mantenha a splash screen visível enquanto carregamos os recursos
 // SplashScreen.preventAutoHideAsync();
@@ -24,17 +27,19 @@ const db = drizzle(expoDb);
 
 export default function App() {
   const scheme = useColorScheme();
+  // const scheme = "dark"
   const theme = scheme === "dark" ? CustomDarkTheme : CustomLightTheme;
 
-  const { success, error } = useMigrations(db, migrations);
+  const reset =false;
 
-  console.log(success)
-  console.error(error)
+  if (!reset){
+
+  const { success, error } = useMigrations(db, migrations);
 
   if (error) {
     return (
       <View>
-        <Text>Erro com o banco</Text>
+        <Text>Erro com o banco {error.message}</Text>
       </View>
     );
   }
@@ -45,7 +50,7 @@ export default function App() {
         <ActivityIndicator animating={true} color={theme.colors.primary} />
       </View>
     );
-  }
+  }}
 
   return (
     <SafeAreaProvider>
@@ -55,6 +60,7 @@ export default function App() {
           options={{ enableChangeListener: true }}
           useSuspense
         >
+          { reset && <Teste /> }
           <Navigation />
         </SQLiteProvider>
       </PaperProvider>

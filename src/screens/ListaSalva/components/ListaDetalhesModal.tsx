@@ -4,7 +4,7 @@ import { Button, Text, Card, IconButton, Chip, Icon } from "react-native-paper";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
-import { Itens } from "../../../db/schema";
+import { Itens } from "@db/schema";
 import { useTheme } from "react-native-paper";
 import { fontSizes } from "@/screens/shared/ui/Typography";
 import { useColorScheme } from "react-native";

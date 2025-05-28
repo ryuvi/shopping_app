@@ -3,24 +3,25 @@ import { useState, useEffect, useCallback } from "react";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { eq } from "drizzle-orm";
-import * as schema from "../../../db/schema";
+import * as schema from "@db/schema";
+import { Itens } from "@db/schema";
 
-export interface Item {
-  id: string;
-  nome: string;
-  quantity: number;
-  price: number;
-  peso: number;
-  category: string;
-  isPromocao: boolean;
-  createdAt: string;
-}
+// export interface Item {
+//   id: string;
+//   nome: string;
+//   quantity: number;
+//   price: number;
+//   peso: number;
+//   category: string;
+//   isPromocao: boolean;
+//   createdAt: string;
+// }
 
 export interface ListaComItens {
   id: string;
   nome: string;
   createdAt: string;
-  items: Item[];
+  items: Itens[];
 }
 
 export default function useListasSalvas() {
@@ -54,7 +55,7 @@ export default function useListasSalvas() {
 
         const itensConvertidos = resultado.map((item) => ({
           ...item,
-          isPromocao: !!item.isPromocao,
+          isPromocao: item.isPromocao ? 1 : 0,
         }));
 
         return {

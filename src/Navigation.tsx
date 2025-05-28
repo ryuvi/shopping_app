@@ -1,6 +1,6 @@
 // Navigation.tsx
 import React, { useState } from "react";
-import { BottomNavigation } from "react-native-paper";
+import { BottomNavigation, useTheme } from "react-native-paper";
 import ListaCompras from "./screens/ListaCompras/ListaCompras";
 import ListasSalvas from "./screens/ListaSalva/ListasSalvas";
 import Despensa from "./screens/Despensa/Despensa";
@@ -9,6 +9,8 @@ import Despensa from "./screens/Despensa/Despensa";
 
 const Navigation = () => {
   const [index, setIndex] = useState(0);
+
+  const { colors } = useTheme();
 
   const [routes] = useState([
     {
@@ -39,6 +41,9 @@ const Navigation = () => {
 
   return (
     <BottomNavigation
+      shifting={true}
+      sceneAnimationEnabled={true}
+      sceneAnimationType="shifting"
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}

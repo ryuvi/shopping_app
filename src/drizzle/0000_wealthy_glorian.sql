@@ -4,7 +4,7 @@ CREATE TABLE `despensa` (
 	`quantity` integer NOT NULL,
 	`peso` real NOT NULL,
 	`category` text NOT NULL,
-	`aberto` integer DEFAULT false NOT NULL,
+	`aberto` integer DEFAULT 0 NOT NULL,
 	`criado_em` text NOT NULL
 );
 --> statement-breakpoint
@@ -15,7 +15,7 @@ CREATE TABLE `itens` (
 	`preco` real NOT NULL,
 	`peso` real NOT NULL,
 	`categoria` text NOT NULL,
-	`promocao` integer DEFAULT false NOT NULL,
+	`promocao` integer DEFAULT 0 NOT NULL,
 	`criado_em` text NOT NULL
 );
 --> statement-breakpoint

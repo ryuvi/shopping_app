@@ -20,7 +20,7 @@ export default function ListaSubtotal({ subtotal, limite }: { subtotal: number, 
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <View style={styles.textContainer}>
         <Text style={styles.text}>
           Subtotal: <Text style={{ 
@@ -71,10 +71,6 @@ export default function ListaSubtotal({ subtotal, limite }: { subtotal: number, 
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // paddingVertical: 12,
-    // paddingHorizontal: 16,
-  },
   textContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

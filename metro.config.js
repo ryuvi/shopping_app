@@ -11,6 +11,8 @@ config.resolver = {
     alias: {
         '@': path.resolve(__dirname, 'src'),
         '@db': path.resolve(__dirname, 'src/db'),
+        '@shared': path.resolve(__dirname, 'src/screens/shared'),
+        '@assets': path.resolve(__dirname, 'assets'),
     }
 }
 
