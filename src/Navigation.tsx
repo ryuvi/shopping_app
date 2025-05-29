@@ -8,7 +8,7 @@ import Despensa from "./screens/Despensa/Despensa";
 // import GraficoHistorico from "./screens/Graficos"; // ativar quando for usar
 
 const Navigation = () => {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(1);
 
   const { colors } = useTheme();
 

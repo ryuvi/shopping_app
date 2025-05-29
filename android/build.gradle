@@ -35,3 +35,9 @@ allprojects {
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
+
+externalNativeBuild {
+  cmake {
+    arguments "-DCMAKE_MAKE_PROGRAM=C:\\ninja\\ninja.exe", "-DCMAKE_OBJECT_PATH_MAX=1024"
+  }
+}

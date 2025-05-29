@@ -27,6 +27,7 @@ export default function ListasSalvas() {
           renderItem={({ item }) => <ListaCard item={item} onPress={() => abrirModal(item)} />}
           ItemSeparatorComponent={() => <Divider />}
           contentContainerStyle={{ padding: 8 }}
+          numColumns={2}
         />
       )}
       <ListaDetalhesModal

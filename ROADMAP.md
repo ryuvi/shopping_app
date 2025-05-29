@@ -4,6 +4,8 @@ Objetivo: versão funcional, estável e útil para uso diário, com estrutura b�
 
  Lista de compras com CRUD local
 
+ Input pra inserir o mercado que fez a compra
+
  Armazenamento com SQLite + AsyncStorage
 
  Histórico limitado (últimas 3 listas)
