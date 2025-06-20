@@ -51,7 +51,7 @@ export default function ListaFAB({
             position: 'absolute',
             height,
             width,
-            paddingBottom: '35%'
+            paddingBottom: '40%'
           }}
         />
     </Portal>

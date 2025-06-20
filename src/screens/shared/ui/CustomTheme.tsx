@@ -4,28 +4,28 @@ export const CustomLightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#4CAF50',
+    primary: '#43A047',
     onPrimary: '#FFFFFF',
-    primaryContainer: '#A5D6A7',
+    primaryContainer: '#C8E6C9',
     onPrimaryContainer: '#1B5E20',
 
-    secondary: '#8BC34A',
+    secondary: '#689F38',
     onSecondary: '#FFFFFF',
-    secondaryContainer: '#DCEDC8',
+    secondaryContainer: '#DCE775',
     onSecondaryContainer: '#33691E',
 
-    tertiary: '#00BCD4',
+    tertiary: '#0097A7',
     onTertiary: '#FFFFFF',
     tertiaryContainer: '#B2EBF2',
-    onTertiaryContainer: '#006064',
+    onTertiaryContainer: '#004D40',
 
-    background: '#F5F5F5',
+    background: '#FAFAFA',
     onBackground: '#212121',
 
     surface: '#FFFFFF',
     onSurface: '#212121',
-    surfaceVariant: '#EEEEEE',
-    onSurfaceVariant: '#424242',
+    surfaceVariant: '#F0F0F0',
+    onSurfaceVariant: '#4F4F4F',
 
     outline: '#BDBDBD',
     outlineVariant: '#E0E0E0',
@@ -33,21 +33,21 @@ export const CustomLightTheme = {
     error: '#D32F2F',
     onError: '#FFFFFF',
     errorContainer: '#FFCDD2',
-    onErrorContainer: '#B71C1C',
+    onErrorContainer: '#C62828',
 
-    inverseSurface: '#212121',
+    inverseSurface: '#303030',
     inverseOnSurface: '#FAFAFA',
     inversePrimary: '#66BB6A',
 
     shadow: '#000000',
-    surfaceDisabled: 'rgba(33, 33, 33, 0.12)',
-    onSurfaceDisabled: 'rgba(33, 33, 33, 0.38)',
+    surfaceDisabled: 'rgba(0, 0, 0, 0.12)',
+    onSurfaceDisabled: 'rgba(0, 0, 0, 0.38)',
     backdrop: 'rgba(0, 0, 0, 0.32)',
-    
-    warning: '#FFA000',           // Amarelo escuro (Amber 700)
-    onWarning: '#000000',         // Preto (bom contraste)
-    warningContainer: '#FFECB3',  // Amarelo claro (Amber 100)
-    onWarningContainer: '#4E342E' // Marrom escuro (bom contraste)
+
+    warning: '#FBC02D',
+    onWarning: '#000000',
+    warningContainer: '#FFF9C4',
+    onWarningContainer: '#5D4037',
   },
 };
 
@@ -57,18 +57,18 @@ export const CustomDarkTheme = {
   colors: {
     ...MD3DarkTheme.colors,
     primary: '#81C784',
-    onPrimary: '#000000',
+    onPrimary: '#1B5E20',
     primaryContainer: '#388E3C',
     onPrimaryContainer: '#C8E6C9',
 
-    secondary: '#A5D6A7',
-    onSecondary: '#1B5E20',
+    secondary: '#AED581',
+    onSecondary: '#33691E',
     secondaryContainer: '#558B2F',
     onSecondaryContainer: '#DCEDC8',
 
     tertiary: '#4DD0E1',
-    onTertiary: '#00363A',
-    tertiaryContainer: '#00838F',
+    onTertiary: '#004D40',
+    tertiaryContainer: '#006064',
     onTertiaryContainer: '#B2EBF2',
 
     background: '#121212',
@@ -79,12 +79,12 @@ export const CustomDarkTheme = {
     surfaceVariant: '#2C2C2C',
     onSurfaceVariant: '#BDBDBD',
 
-    outline: '#424242',
-    outlineVariant: '#616161',
+    outline: '#616161',
+    outlineVariant: '#757575',
 
     error: '#EF9A9A',
     onError: '#000000',
-    errorContainer: '#B71C1C',
+    errorContainer: '#C62828',
     onErrorContainer: '#FFCDD2',
 
     inverseSurface: '#FAFAFA',
@@ -92,14 +92,15 @@ export const CustomDarkTheme = {
     inversePrimary: '#66BB6A',
 
     shadow: '#000000',
-    surfaceDisabled: 'rgba(224, 224, 224, 0.12)',
-    onSurfaceDisabled: 'rgba(224, 224, 224, 0.38)',
+    surfaceDisabled: 'rgba(255, 255, 255, 0.12)',
+    onSurfaceDisabled: 'rgba(255, 255, 255, 0.38)',
     backdrop: 'rgba(255, 255, 255, 0.32)',
 
-    warning: '#FFCA28',           // Amarelo médio (Amber 400)
+    warning: '#FFB300',
     onWarning: '#000000',
-    warningContainer: '#4E342E',  // Marrom escuro (fundo para destaque)
-    onWarningContainer: '#FFECB3' // Texto amarelo claro
+    warningContainer: '#4E342E',
+    onWarningContainer: '#FFECB3',
   },
 };
+
 

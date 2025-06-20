@@ -1,7 +1,5 @@
-// ListaModal.tsx
-
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Dimensions, Alert } from "react-native";
 import {
   Modal,
   Portal,
@@ -10,6 +8,7 @@ import {
   Button,
   Switch,
   HelperText,
+  useTheme,
 } from "react-native-paper";
 import { Itens } from "@db/schema";
 import { fontSizes } from "../../shared/ui/Typography";
@@ -30,7 +29,6 @@ interface Props {
   item: Itens | null;
 }
 
-// Função para normalizar nomes (primeira letra maiúscula e remover espaços extras)
 const normalizeText = (text: string) => {
   return text
     .toLowerCase()
@@ -41,15 +39,12 @@ const normalizeText = (text: string) => {
     .join(" ");
 };
 
-export default function ListaModal({
-  visible,
-  onDismiss,
-  onSave,
-  item,
-}: Props) {
+export default function ListaModal({ visible, onDismiss, onSave, item }: Props) {
+  const { colors } = useTheme();
+
   const [name, setName] = useState("");
   const [pricePerItem, setPricePerItem] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [quantity, setQuantity] = useState("1");
   const [isPromotion, setIsPromotion] = useState(false);
   const [category, setCategory] = useState("");
   const [peso, setPeso] = useState("1");
@@ -59,13 +54,13 @@ export default function ListaModal({
       setName(item.nome);
       setPricePerItem(item.price.toString().replace(".", ","));
       setQuantity(item.quantity.toString());
-      setIsPromotion(item.isPromocao === 1 ? true : false);
+      setIsPromotion(item.isPromocao === 1);
       setCategory(item.category || "");
       setPeso(item.peso?.toString().replace(".", ",") || "1");
     } else {
       setName("");
       setPricePerItem("");
-      setQuantity("");
+      setQuantity("1");
       setIsPromotion(false);
       setCategory("");
       setPeso("1");
@@ -73,7 +68,6 @@ export default function ListaModal({
   }, [item]);
 
   const handleSubmit = () => {
-
     if (!name.trim()) {
       Alert.alert('Erro', "O nome do item é obrigatório");
       return;
@@ -104,18 +98,28 @@ export default function ListaModal({
     onSave(novoItem);
   };
 
+  const { width, height } = Dimensions.get("window");
+
   return (
     <Portal>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+      <Modal
+        visible={visible}
+        onDismiss={onDismiss}
+        contentContainerStyle={[
+          styles.modalContainer,
+          {
+            backgroundColor: colors.surface,
+            width: width * 0.9,
+            maxHeight: height * 0.8,
+            alignSelf: 'center',
+          },
+        ]}
       >
-        <Modal
-          visible={visible}
-          onDismiss={onDismiss}
-          contentContainerStyle={styles.modalContainer}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
         >
-          <Text style={styles.modalTitle}>
+          <Text style={[styles.modalTitle, { color: colors.onSurface }]}>
             {item ? "Editar Item" : "Adicionar Item"}
           </Text>
 
@@ -136,7 +140,7 @@ export default function ListaModal({
             style={styles.input}
             mode="outlined"
           />
-          <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <TextInput
               label="Quantidade"
               placeholder="2"
@@ -164,15 +168,18 @@ export default function ListaModal({
             style={styles.input}
             mode="outlined"
           />
-          <HelperText type="info">
+          <HelperText type="info" style={{ color: colors.onSurfaceVariant }}>
             Categorias: {CATEGORIAS.join(", ")}
           </HelperText>
 
           <View style={styles.switchContainer}>
-            <Text style={{ fontSize: fontSizes.normal }}>Promoção?</Text>
+            <Text style={{ fontSize: fontSizes.normal, color: colors.onSurface }}>
+              Promoção?
+            </Text>
             <Switch
               value={isPromotion}
               onValueChange={() => setIsPromotion(!isPromotion)}
+              color={colors.primary}
             />
           </View>
 
@@ -184,22 +191,22 @@ export default function ListaModal({
           >
             {item ? "Atualizar" : "Salvar"}
           </Button>
-        </Modal>
-      </KeyboardAvoidingView>
+        </ScrollView>
+      </Modal>
     </Portal>
   );
 }
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    margin: 20,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 16,
   },
   modalTitle: {
     fontSize: 20,
-    marginBottom: 10,
+    fontWeight: "bold",
+    marginBottom: 12,
+    alignSelf: "center",
   },
   input: {
     marginBottom: 10,

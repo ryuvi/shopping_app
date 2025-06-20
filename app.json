@@ -2,10 +2,10 @@
   "expo": {
     "name": "Meu Guia de Compras",
     "slug": "Meu Guia de Compras",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon-1.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "lightt",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-1.png",

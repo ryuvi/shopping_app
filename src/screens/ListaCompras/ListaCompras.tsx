@@ -13,20 +13,20 @@ import ConfigModal from "./components/ConfigModal";
 
 import { useListaCompras } from "./hooks/useListaCompras";
 import SaveListDialog from "./components/ListaNomeDialog";
+import { useConfig } from "../shared/hooks/useConfigStore";
 
 const ListaCompras = () => {
+  const { limite } = useConfig();
   const {
     items,
     modalVisible,
     editingItem,
     snackbarVisible,
     nomeLista,
-    limite,
     configVisible,
     subtotal,
     setModalVisible,
     setSnackbarVisible,
-    setLimite,
     setConfigVisible,
     abrirModal,
     abrirConfigModal,
@@ -54,8 +54,6 @@ const ListaCompras = () => {
         <ConfigModal
           visible={configVisible}
           onDismiss={() => setConfigVisible(false)}
-          limite={limite}
-          setLimite={setLimite}
         />
         <SaveListDialog
           visible={saveDialogVisible}

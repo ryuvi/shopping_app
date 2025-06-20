@@ -1,18 +1,34 @@
 import React from "react";
-import { View, Modal, StyleSheet, FlatList } from "react-native";
-import { Button, Text, Card, IconButton, Chip, Icon } from "react-native-paper";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  useColorScheme,
+} from "react-native";
+import {
+  Button,
+  Modal,
+  Text,
+  Card,
+  IconButton,
+  Chip,
+  Icon,
+  useTheme,
+  Portal,
+} from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 import { Itens } from "@db/schema";
-import { useTheme } from "react-native-paper";
 import { fontSizes } from "@/screens/shared/ui/Typography";
-import { useColorScheme } from "react-native";
+import { useListaStore } from "@shared/hooks/useListaStore";
 
 interface Props {
   visible: boolean;
   onDismiss: () => void;
-  lista: { nome: string; items: Itens[] } | null;
+  lista: { id: string; nome: string; items: Itens[] } | null;
 }
 
 const ListaDetalhesModal = ({ visible, onDismiss, lista }: Props) => {
@@ -20,6 +36,7 @@ const ListaDetalhesModal = ({ visible, onDismiss, lista }: Props) => {
 
   const { colors } = useTheme();
   const scheme = useColorScheme();
+  const { width, height } = Dimensions.get("window");
 
   const exportarCSV = async () => {
     const header = "Nome,Quantidade,Peso,Preço,PreçoTotal\n";
@@ -65,7 +82,7 @@ const ListaDetalhesModal = ({ visible, onDismiss, lista }: Props) => {
           <h1>${lista.nome}</h1>
           <table>
             <thead>
-              <tr><th>Nome</th><th>Quantidade</th><th>Peso</th><th>Preço</th><th<Preço Total</th></tr>
+              <tr><th>Nome</th><th>Quantidade</th><th>Peso</th><th>Preço</th><th>Preço Total</th></tr>
             </thead>
             <tbody>
               ${lista.items
@@ -96,149 +113,184 @@ const ListaDetalhesModal = ({ visible, onDismiss, lista }: Props) => {
     });
   };
 
-  return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onDismiss}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text variant="titleLarge">{lista.nome}</Text>
-          <IconButton icon="close" onPress={onDismiss} />
-        </View>
-
-        <FlatList
-          data={lista.items}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Card
-              style={[
-                styles.card,
-                item.isPromocao ? styles.promotion : styles.not_promotion,
-              ]}
+  const renderItem = ({ item }: { item: Itens }) => (
+    <Card
+      style={[
+        styles.card,
+        {
+          borderColor: item.isPromocao ? "#FFD700" : colors.outline,
+          backgroundColor: colors.surface,
+        },
+      ]}
+    >
+      <Card.Content>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {item.isPromocao && (
+              <Icon
+                source="star-outline"
+                color={scheme === "dark" ? "#FFA000" : "#FFCA28"}
+                size={24}
+              />
+            )}
+            <Text
+              style={{
+                marginLeft: item.isPromocao ? 8 : 0,
+                fontWeight: "bold",
+                fontSize: fontSizes.medium,
+                color: colors.onSurface,
+              }}
             >
-              <Card.Content>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    {item.isPromocao && (
-                      <Icon
-                        source="star-outline"
-                        color={scheme === "dark" ? "#FFA000" : "#FFCA28"}
-                        size={24}
-                      />
-                    )}
-                    <Text
-                      style={{
-                        marginLeft: item.isPromocao ? 8 : 0,
-                        fontWeight: "bold",
-                        fontSize: fontSizes.medium,
-                      }}
-                    >
-                      {item.nome} {/* Usando item.nome conforme schema */}
-                    </Text>
-                  </View>
-                  <Text style={{ fontSize: fontSizes.small }}>
-                    Qtd:{" "}
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: fontSizes.normal,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      {item.quantity}x
-                    </Text>
-                  </Text>
-                </View>
-                <Text style={{ fontSize: fontSizes.small }}>
-                  Preço Unitário:{" "}
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: fontSizes.normal,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(item.price)}
-                  </Text>
-                </Text>
-                <Text style={{ fontSize: fontSizes.small }}>
-                  Peso:{" "}
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: fontSizes.normal,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {item.peso} kg
-                  </Text>
-                </Text>
-                <Text style={{ fontSize: fontSizes.small }}>
-                  Preço Total:{" "}
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: fontSizes.normal,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format((item.peso != 1 ? item.price * item.peso : item.price * item.quantity))}
-                  </Text>
-                </Text>
-              </Card.Content>
-              <Card.Actions>
-                <View style={styles.actionsContainer}>
-                  <Chip
-                    textStyle={{
-                      color: colors.primary,
-                      fontSize: fontSizes.normal,
-                      fontWeight: "bold",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {item.category}
-                  </Chip>
-                </View>
-              </Card.Actions>
-            </Card>
-          )}
-        />
-
-        <View style={styles.buttons}>
-          <Button mode="contained" onPress={exportarCSV} style={styles.botao}>
-            Exportar CSV
-          </Button>
-          <Button mode="contained" onPress={exportarPDF} style={styles.botao}>
-            Exportar PDF
-          </Button>
+              {item.nome}
+            </Text>
+          </View>
+          <Text style={{ fontSize: fontSizes.small, color: colors.onSurface }}>
+            Qtd:{" "}
+            <Text
+              style={{
+                fontWeight: "bold",
+                fontSize: fontSizes.normal,
+              }}
+            >
+              {item.quantity}x
+            </Text>
+          </Text>
         </View>
-      </View>
-    </Modal>
+
+        <Text style={{ fontSize: fontSizes.small, color: colors.onSurface }}>
+          Preço Unitário:{" "}
+          <Text
+            style={{ fontWeight: "bold", fontSize: fontSizes.normal }}
+          >
+            {new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(item.price)}
+          </Text>
+        </Text>
+
+        <Text style={{ fontSize: fontSizes.small, color: colors.onSurface }}>
+          Peso:{" "}
+          <Text
+            style={{ fontWeight: "bold", fontSize: fontSizes.normal }}
+          >
+            {item.peso} kg
+          </Text>
+        </Text>
+
+        <Text style={{ fontSize: fontSizes.small, color: colors.onSurface }}>
+          Preço Total:{" "}
+          <Text
+            style={{ fontWeight: "bold", fontSize: fontSizes.normal }}
+          >
+            {new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(
+              item.peso != 1
+                ? item.price * item.peso
+                : item.price * item.quantity
+            )}
+          </Text>
+        </Text>
+      </Card.Content>
+      <Card.Actions>
+        <View style={styles.actionsContainer}>
+          <Chip
+            textStyle={{
+              color: colors.primary,
+              fontSize: fontSizes.normal,
+              fontWeight: "bold",
+            }}
+          >
+            {item.category}
+          </Chip>
+        </View>
+      </Card.Actions>
+    </Card>
+  );
+
+  return (
+    <Portal>
+      <Modal visible={visible} onDismiss={onDismiss}
+        contentContainerStyle={[
+          styles.modalContainer,
+          {
+            backgroundColor: colors.surface,
+            maxHeight: height * 0.85,
+            width: width * 0.9,
+            alignSelf: "center",
+          },
+        ]}>
+        <View /* style={styles.overlay} */>
+            <View style={styles.header}>
+              <Text variant="titleLarge" style={{ color: colors.onBackground }}>
+                {lista.nome}
+              </Text>
+              <IconButton
+                icon="close"
+                onPress={onDismiss}
+                iconColor={colors.primary}
+              />
+            </View>
+
+            <FlatList
+              data={lista.items}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              contentContainerStyle={{ paddingBottom: 16 }}
+              showsVerticalScrollIndicator={false}
+            />
+
+            <View style={styles.buttons}>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  useListaStore.getState().iniciarEdicao({
+                    id: lista.id,
+                    nome: lista.nome,
+                    items: lista.items,
+                  });
+                  onDismiss();
+                }}
+                style={styles.botao}
+              >
+                Editar Lista
+              </Button>
+              <Button mode="contained" onPress={exportarCSV} style={styles.botao}>
+                Exportar CSV
+              </Button>
+              <Button mode="contained" onPress={exportarPDF} style={styles.botao}>
+                Exportar PDF
+              </Button>
+            </View>
+        </View>
+      </Modal>
+    </Portal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  overlay: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  modalContainer: {
     padding: 16,
-    // backgroundColor: "#fff",
+    borderRadius: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 10,
   },
   card: {
     marginVertical: 6,
+    borderWidth: 1,
+    borderRadius: 12,
   },
   buttons: {
     flexDirection: "row",
@@ -249,17 +301,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 6,
   },
-  promotion: {
-    borderColor: "#FFD700", // Cor dourada para promoção
-  },
-  not_promotion: {
-    borderColor: "#E0E0E0", // Cor cinza para itens normais
-  },
   actionsContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    width: '100%', 
-    paddingHorizontal: 10
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingHorizontal: 10,
   },
 });
 

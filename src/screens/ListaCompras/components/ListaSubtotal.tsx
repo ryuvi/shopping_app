@@ -20,7 +20,7 @@ export default function ListaSubtotal({ subtotal, limite }: { subtotal: number, 
   };
 
   return (
-    <View>
+    <View style={{ backgroundColor: colors.surface, paddingVertical: 5 }}>
       <View style={styles.textContainer}>
         <Text style={styles.text}>
           Subtotal: <Text style={{ 

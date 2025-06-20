@@ -1,5 +1,6 @@
 // ConfigModal.tsx
 
+import { useConfig } from "@shared/hooks/useConfigStore";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Modal, Portal, Text, TextInput, Button } from "react-native-paper";
@@ -7,11 +8,11 @@ import { Modal, Portal, Text, TextInput, Button } from "react-native-paper";
 interface Props {
   visible: boolean;
   onDismiss: () => void;
-  limite: number | null;
-  setLimite: (value: number) => void;
 }
 
-export default function ConfigModal({ visible, onDismiss, limite, setLimite }: Props) {
+export default function ConfigModal({ visible, onDismiss }: Props) {
+  const { setLimite, limite } = useConfig();
+
   const handleChange = (text: string) => {
     const parsed = parseFloat(text.replace(",", "."));
     if (!isNaN(parsed)) {
