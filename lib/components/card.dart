@@ -5,8 +5,7 @@ class ItemCard extends StatelessWidget {
   final String nome;
   final String preco;
   final String total;
-  final double peso;
-  final int    quantidade;
+  final double quantidade;
   final String categoria;
   final bool   promotion;
 
@@ -17,7 +16,6 @@ class ItemCard extends StatelessWidget {
     required this.nome,
     required this.preco,
     required this.total,
-    required this.peso,
     required this.quantidade,
     required this.categoria,
     required this.promotion,
@@ -61,7 +59,7 @@ class ItemCard extends StatelessWidget {
               ),
               SizedBox(height: 8),
               Text(
-                "Preço Unitário: $preco\nPeso: $peso\nQuantidade: $quantidade\nCategoria: $categoria",
+                "Preço Unitário: $preco\nQuantidade/Peso: $quantidade\nCategoria: $categoria",
                 style: TextStyle(fontSize: 12),
               ),
             ],

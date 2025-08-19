@@ -17,9 +17,12 @@ void main() async {
 
   runApp(
     MaterialApp(
-      theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green), useMaterial3: true),
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
+      ),
       home: MeuGuiaCompras(),
-    )
+    ),
   );
 }
 
@@ -31,19 +34,20 @@ class MeuGuiaCompras extends StatefulWidget {
 class _ListSubTotalState extends State<MeuGuiaCompras> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    MeusProdutos(),
-    MinhasListas(),
-  ];
+  final List<Widget> _pages = [MeusProdutos(), MinhasListas()];
 
   String formatValue(double value) {
-    return NumberFormat.currency(locale:'pt_BR',symbol:'R\$',decimalDigits:2).format(value);
+    return NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+      decimalDigits: 2,
+    ).format(value);
   }
 
   void _saveList(String listName) async {
     final name = listName == null || listName.isEmpty
-               ? DateFormat('dd/MM/yyyy').format(DateTime.now())
-               : listName;
+        ? DateFormat('dd/MM/yyyy').format(DateTime.now())
+        : listName;
 
     final Box listasBox = Hive.box("listas");
     final Box produtosBox = Hive.box("produtos");
@@ -54,7 +58,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
     await produtosBox.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Lista '$listName' salva com sucesso!"))
+      SnackBar(content: Text("Lista '$listName' salva com sucesso!")),
     );
   }
 
@@ -68,14 +72,12 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
           title: Text("Salvar Lista"),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(
-              labelText: "Nome da Lista"
-            )
+            decoration: InputDecoration(labelText: "Nome da Lista"),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancelar")
+              child: Text("Cancelar"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -83,49 +85,59 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
                 Navigator.pop(context);
               },
               child: Text("Salvar"),
-            )
-          ]
+            ),
+          ],
         );
-      }
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.deepOrange[50],
       appBar: AppBar(
-        title: const Text('Meu Guia de Compras'),
+        title: Text(
+          'Meu Guia de Compras',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         elevation: 4,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
         // surfaceTintColor: Colors.transparent,
         leading: Builder(
           builder: (BuildContext context) {
-            return Icon(Icons.shopping_cart_outlined);
-          }
+            // return Icon(Icons.shopping_cart_outlined);
+            return Image.asset(
+              'assets/images/logo.png',
+              width: 32,
+              height: 32,
+              fit: BoxFit.cover
+            );
+          },
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.save),
-            onPressed: () => _showSaveDialog(context)
-          )
-        ]
+            onPressed: () => _showSaveDialog(context),
+          ),
+        ],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _pages),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => const CustomModal()
+            builder: (context) => const CustomModal(),
           );
         },
         tooltip: 'Adicionar Item',
         shape: CircleBorder(),
-        child: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimaryContainer)
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
@@ -137,25 +149,40 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
               padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
               decoration: BoxDecoration(
                 // shape: BoxShape.circle,
-                color: _currentIndex == 0 ? Theme.of(context).colorScheme.surface : Colors.transparent,
-                borderRadius: BorderRadius.circular(24)
+                color: _currentIndex == 0
+                    ? Theme.of(context).colorScheme.surface
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(24),
               ),
               child: IconButton(
                 onPressed: () => setState(() => _currentIndex = 0),
-                icon: Icon(Icons.shopping_cart, color: _currentIndex == 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface)
-              )
+                icon: Icon(
+                  Icons.shopping_cart,
+                  color: _currentIndex == 0
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.surface,
+                ),
+              ),
             ),
             Container(
               padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
               decoration: BoxDecoration(
                 // shape: BoxShape.circle,
-                color: _currentIndex == 1 ? Theme.of(context).colorScheme.surface : Colors.transparent,
-                borderRadius: BorderRadius.circular(24)
+                color: _currentIndex == 1
+                    ? Theme.of(context).colorScheme.surface
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(24),
               ),
               child: IconButton(
                 onPressed: () => setState(() => _currentIndex = 1),
-                icon: Icon(Icons.view_list, color: _currentIndex == 1 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface))
-            )
+                icon: Icon(
+                  Icons.view_list,
+                  color: _currentIndex == 1
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.surface,
+                ),
+              ),
+            ),
           ],
         ),
       ),

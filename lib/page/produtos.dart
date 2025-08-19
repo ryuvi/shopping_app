@@ -79,28 +79,30 @@ class _MeusProdutos extends State<MeusProdutos> {
         valueListenable: produtosBox.listenable(),
         builder: (context, Box box, _) {
           if (box.isEmpty) {
-            return Center(
-              child: Card(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.shopping_cart_outlined, size: 64, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                      SizedBox(height: 10),
-                      Text(
-                        "Sua lista está vazia!",
-                        style: TextStyle(fontSize: 24, color: Theme.of(context).colorScheme.onPrimaryContainer)
-                      ),
-                      SizedBox(height:5),
-                      Text(
-                        "Clique no botão '+' para adicionar produtos",
-                        style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                        textAlign: TextAlign.center
-                      )
-                    ]
+            return Container(
+              child: Center(
+                child: Card(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.shopping_cart_outlined, size: 64, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                        SizedBox(height: 10),
+                        Text(
+                          "Sua lista está vazia!",
+                          style: TextStyle(fontSize: 24, color: Theme.of(context).colorScheme.onPrimaryContainer)
+                        ),
+                        SizedBox(height:5),
+                        Text(
+                          "Clique no botão '+' para adicionar produtos",
+                          style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                          textAlign: TextAlign.center
+                        )
+                      ]
+                    )
                   )
                 )
               )
@@ -111,9 +113,8 @@ class _MeusProdutos extends State<MeusProdutos> {
           for (var i=0; i < box.length; i++) {
             final item = box.getAt(i) as Map;
             final preco = item['preco'] as double;
-            final qtd = item['quantidade'] as int;
-            final peso = item['peso'] as double;
-            total += (preco * qtd * peso);
+            final qtd = item['quantidade'] as double;
+            total += (preco * qtd);
           }
           String totalString = formatValue(total);
 
@@ -121,11 +122,11 @@ class _MeusProdutos extends State<MeusProdutos> {
             children: [
               Container(
                 width: double.infinity,
-                color: Theme.of(context).colorScheme.secondaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   "Total: $totalString",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSecondaryContainer)
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)
                 )
               ),
               Expanded(
@@ -136,8 +137,7 @@ class _MeusProdutos extends State<MeusProdutos> {
                     return ItemCard(
                       nome: item['nome'],
                       preco: formatValue(item['preco']),
-                      total: formatValue(item['preco'] * item['peso'] * item['quantidade']),
-                      peso: item['peso'],
+                      total: formatValue(item['preco'] * item['quantidade']),
                       quantidade: item['quantidade'],
                       categoria: item['categoria'],
                       promotion: item['promocao'],
