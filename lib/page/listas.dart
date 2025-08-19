@@ -32,73 +32,115 @@ class _MinhasListas extends State<MinhasListas> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.shopping_cart_outlined, size: 64, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 64,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
                     SizedBox(height: 10),
                     Text(
                       "Você está sem listas salvas!",
-                      style: TextStyle(fontSize: 24, color: Theme.of(context).colorScheme.onPrimaryContainer)
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
                     ),
-                  ]
-                )
-              )
-            )
+                  ],
+                ),
+              ),
+            ),
           );
         }
 
         return ListView.builder(
           itemCount: box.length,
           itemBuilder: (context, index) {
+            final listname = box.keys.toList()[index];
             final products = List<Map<dynamic, dynamic>>.from(box.getAt(index));
             final productCount = products.length;
-            final listname = box.keys.toList()[index];
 
+            return Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.horizontal,
+              background: Container(
+                color: Theme.of(context).colorScheme.inversePrimary,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: 20),
+                child: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
+              ),
+              secondaryBackground: Container(
+                color: Theme.of(context).colorScheme.errorContainer,
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.only(right: 20),
+                child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onErrorContainer)
+              ),
+              onDismissed: (direction) async {
+                if (direction == DismissDirection.startToEnd) {
+                  for (var item in products) {
+                    await produtosBox.add(item);
+                  }
 
-            return InkWell(
-              onTap: () async {
-                for (var item in products) {
-                  await produtosBox.add(item);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.fixed,
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            "Lista selecionada! Para editar/visualizar volte a tela inicial.",
+                            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                          ),
+                          Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+                        ],
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                  );
+                } else if (direction == DismissDirection.endToStart) {
+                  await listasBox.delete(listname);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      behavior: SnackBarBehavior.fixed,
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            "Lista deletada com sucesso!",
+                            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                          ),
+                          Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+                        ],
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                  );
                 }
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Lista aberta, volte pra página de produtos para ver."))
-                );
               },
-              borderRadius: BorderRadius.circular(10),
-              child:
-                Card(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(4),
+                child: Card(
                   elevation: 6,
                   surfaceTintColor: Theme.of(context).colorScheme.inversePrimary,
                   shape: RoundedRectangleBorder(
                     side: BorderSide(
                       color: Theme.of(context).colorScheme.inversePrimary,
-                      width: 2
+                      width: 2,
                     ),
-                    borderRadius: BorderRadius.circular(16)
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  margin: EdgeInsets.all(8),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "$listname",
-                          style: TextStyle(fontSize: 16)
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          "Produtos: $productCount",
-                          style: TextStyle(fontSize: 12)
-                        )
-                      ]
-                    )
-                  ),
-                )
+                  margin: EdgeInsets.all(4),
+                  child: ListTile(
+                    title: Text("$listname"),
+                    subtitle: Text("Produtos: $productCount")
+                  )
+                ),
+              )
             );
-          }
+          },
         );
-      }
+      },
     );
   }
 }

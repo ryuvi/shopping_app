@@ -54,7 +54,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
 
     List currentItems = produtosBox.values.toList();
 
-    await listasBox.put("Lista do Dia $name", currentItems);
+    await listasBox.put(name, currentItems);
     await produtosBox.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
