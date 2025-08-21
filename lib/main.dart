@@ -3,9 +3,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-import 'components/custom_modal.dart';
+import 'components/products_modal.dart';
+import 'components/despensa_modal.dart';
 import 'components/bar_item.dart';
 
+import 'page/despensa.dart';
 import 'page/produtos.dart';
 import 'page/listas.dart';
 
@@ -15,6 +17,7 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('produtos');
   await Hive.openBox('listas');
+  await Hive.openBox('despensa');
 
   runApp(
     MaterialApp(
@@ -38,7 +41,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
   bool _isListening = false;
   String _lastWords = '';
 
-  final List<Widget> _pages = [MeusProdutos(), MinhasListas()];
+  final List<Widget> _pages = [MeusProdutos(), MinhasListas(), Despensa()];
 
   @override
   void initState() {
@@ -125,7 +128,20 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
     await produtosBox.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Lista '$listName' salva com sucesso!")),
+      SnackBar(
+        behavior: SnackBarBehavior.fixed,
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Lista $name salva com sucesso!",
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+            Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+          ],
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
     );
   }
 
@@ -202,7 +218,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => const CustomModal(),
+            builder: (context) => _currentIndex != 2 ? ProductsModal() : DespensaModal(),
           );
         },
         tooltip: 'Adicionar Item',
@@ -218,6 +234,8 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
         items: [
           CustomAppBarItem(icon: Icons.shopping_cart),
           CustomAppBarItem(icon: Icons.list),
+          CustomAppBarItem(icon: Icons.kitchen),
+          CustomAppBarItem(icon: Icons.analytics)
         ],
       )
     );

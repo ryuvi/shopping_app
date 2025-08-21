@@ -39,7 +39,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
             onTap: () => onPressed(index),
             child: Container(
               decoration: BoxDecoration(
-                // color: _selectedIndex == index ? Theme.of(context).colorScheme.inversePrimary : Colors.transparent,
                 borderRadius: BorderRadius.circular(24)
               ),
               child: Icon(

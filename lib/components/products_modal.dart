@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class CustomModal extends StatefulWidget {
+class ProductsModal extends StatefulWidget {
   final Map<String, dynamic>? item;
 
-  const CustomModal({super.key, this.item});
+  const ProductsModal({super.key, this.item});
 
   @override
-  State<CustomModal> createState() => _CustomModalState();
+  State<ProductsModal> createState() => _ProductsModalState();
 }
 
-class _CustomModalState extends State<CustomModal> {
+class _ProductsModalState extends State<ProductsModal> {
   // Controllers
   late TextEditingController nomeController;
   late TextEditingController precoController;

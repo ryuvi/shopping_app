@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 
-import '../components/custom_modal.dart';
+import '../components/products_modal.dart';
 import '../components/card.dart';
 
 class MeusProdutos extends StatefulWidget {
@@ -144,7 +144,7 @@ class _MeusProdutos extends State<MeusProdutos> {
                       onTap: () {
                         showDialog(
                           context: context,
-                          builder: (_) => CustomModal(
+                          builder: (_) => ProductsModal(
                             item: {...item, 'key': box.keyAt(index)}
                           )
                         );
