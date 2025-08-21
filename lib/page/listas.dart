@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
+
+import '../components/listas_modal.dart';
+import '../states/list_name.dart';
 
 class MinhasListas extends StatefulWidget {
   @override
@@ -76,13 +80,17 @@ class _MinhasListas extends State<MinhasListas> {
               ),
               onDismissed: (direction) async {
                 if (direction == DismissDirection.startToEnd) {
+                  await produtosBox.clear();
                   for (var item in products) {
                     await produtosBox.add(item);
                   }
 
+                  Provider.of<ListNameState>(context, listen: false).setListName(listname);
+                  Provider.of<ListNameState>(context, listen: false).setIsEditing(true);
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      behavior: SnackBarBehavior.fixed,
+                      behavior: SnackBarBehavior.floating,
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -101,7 +109,7 @@ class _MinhasListas extends State<MinhasListas> {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      behavior: SnackBarBehavior.fixed,
+                      behavior: SnackBarBehavior.floating,
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -120,22 +128,30 @@ class _MinhasListas extends State<MinhasListas> {
               child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(4),
-                child: Card(
-                  elevation: 6,
-                  surfaceTintColor: Theme.of(context).colorScheme.inversePrimary,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                      width: 2,
+                child: InkWell(
+                  onTap: () => {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ListaModal(listName: listname)
+                    )
+                  },
+                  child: Card(
+                    elevation: 6,
+                    surfaceTintColor: Theme.of(context).colorScheme.inversePrimary,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    margin: EdgeInsets.all(4),
+                    child: ListTile(
+                      title: Text("$listname"),
+                      subtitle: Text("Produtos: $productCount")
+                    )
                   ),
-                  margin: EdgeInsets.all(4),
-                  child: ListTile(
-                    title: Text("$listname"),
-                    subtitle: Text("Produtos: $productCount")
-                  )
-                ),
+                )
               )
             );
           },

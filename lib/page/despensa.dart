@@ -47,7 +47,7 @@ class _Despensa extends State<Despensa> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        behavior: SnackBarBehavior.fixed,
+        behavior: SnackBarBehavior.floating,
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

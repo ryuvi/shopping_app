@@ -64,7 +64,7 @@ class _ProductsModalState extends State<ProductsModal> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        behavior: SnackBarBehavior.fixed,
+        behavior: SnackBarBehavior.floating,
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -90,7 +90,7 @@ class _ProductsModalState extends State<ProductsModal> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        behavior: SnackBarBehavior.fixed,
+        behavior: SnackBarBehavior.floating,
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

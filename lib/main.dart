@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+
+import 'states/list_name.dart';
 
 import 'components/products_modal.dart';
 import 'components/despensa_modal.dart';
 import 'components/bar_item.dart';
 
+import 'page/charts.dart';
 import 'page/despensa.dart';
 import 'page/produtos.dart';
 import 'page/listas.dart';
@@ -20,13 +24,16 @@ void main() async {
   await Hive.openBox('despensa');
 
   runApp(
-    MaterialApp(
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
+    ChangeNotifierProvider(
+      create: (_) => ListNameState(),
+      child: MaterialApp(
+        theme: ThemeData.from(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          useMaterial3: true,
+        ),
+        home: MeuGuiaCompras(),
       ),
-      home: MeuGuiaCompras(),
-    ),
+    )
   );
 }
 
@@ -41,7 +48,12 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
   bool _isListening = false;
   String _lastWords = '';
 
-  final List<Widget> _pages = [MeusProdutos(), MinhasListas(), Despensa()];
+  final List<Widget> _pages = [
+    MeusProdutos(),
+    MinhasListas(),
+    Despensa(),
+    AnalyticsPage(),
+  ];
 
   @override
   void initState() {
@@ -58,7 +70,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
   void startListening() async {
     bool available = await _speech.initialize(
       onStatus: (status) => {},
-      onError: (error) => ()
+      onError: (error) => (),
     );
 
     if (available) {
@@ -70,7 +82,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
           });
 
           processCommand(_lastWords);
-        }
+        },
       );
     }
   }
@@ -78,14 +90,13 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
   void processCommand(String command) {
     command = command.toLowerCase();
 
-
     if (command.contains('adicionar')) {
       final regex = RegExp(r'adicionar (.+)');
       final match = regex.firstMatch(command);
 
       if (match != null) {
         final item = match.group(1);
-        if (item != null && item.isNotEmpty)  {
+        if (item != null && item.isNotEmpty) {
           var produtos = Hive.box('produtos');
           Map<String, dynamic> newItem = {
             'nome': item,
@@ -97,7 +108,6 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
           produtos.add(newItem);
         }
       }
-
     }
   }
 
@@ -115,9 +125,13 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
   }
 
   void _saveList(String listName) async {
-    final name = listName == null || listName.isEmpty
-        ? DateFormat('dd/MM/yyyy').format(DateTime.now())
+    final name = listName.isEmpty
+        ? Provider.of<ListNameState>(context, listen: false).listName
         : listName;
+
+    if (!Provider.of<ListNameState>(context, listen: false).isEditing) {
+      Provider.of<ListNameState>(context, listen: false).setListName(name);
+    }
 
     final Box listasBox = Hive.box("listas");
     final Box produtosBox = Hive.box("produtos");
@@ -129,7 +143,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        behavior: SnackBarBehavior.fixed,
+        behavior: SnackBarBehavior.floating,
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -195,30 +209,41 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
               'assets/images/logo.png',
               width: 32,
               height: 32,
-              fit: BoxFit.cover
+              fit: BoxFit.cover,
             );
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.mic),
-            onPressed: _isListening ? startListening : stopListening,
-            tooltip: "Adicionar item por fala!"
-          ),
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: () => _showSaveDialog(context),
-            tooltip: "Salvar Lista!"
-          ),
-        ],
+        actions: (_currentIndex == 0
+            ? [
+                IconButton(
+                  icon: Icon(Icons.mic),
+                  onPressed: _isListening ? startListening : stopListening,
+                  tooltip: "Adicionar item por fala!",
+                ),
+                IconButton(
+                  icon: Icon(Icons.save),
+                  onPressed: () {
+                    final listState = Provider.of<ListNameState>(context, listen: false);
+                    if (listState.isEditing) {
+                       _saveList(listState.listName);
+                    } else {
+                      _showSaveDialog(context);
+                    }
+                  },
+                  tooltip: "Salvar Lista!",
+                ),
+              ]
+            : []),
       ),
       body: IndexedStack(index: _currentIndex, children: _pages),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
+        autofocus: false,
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => _currentIndex != 2 ? ProductsModal() : DespensaModal(),
+            builder: (context) =>
+                _currentIndex != 2 ? ProductsModal() : DespensaModal(),
           );
         },
         tooltip: 'Adicionar Item',
@@ -235,9 +260,9 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
           CustomAppBarItem(icon: Icons.shopping_cart),
           CustomAppBarItem(icon: Icons.list),
           CustomAppBarItem(icon: Icons.kitchen),
-          CustomAppBarItem(icon: Icons.analytics)
+          CustomAppBarItem(icon: Icons.analytics),
         ],
-      )
+      ),
     );
   }
 }

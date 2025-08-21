@@ -37,7 +37,20 @@ class _MeusProdutos extends State<MeusProdutos> {
     await produtosBox.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Lista '$listName' salva com sucesso!"))
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Lista $name salva com sucesso!",
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+            Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+          ],
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
     );
   }
 
