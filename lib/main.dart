@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import 'components/custom_modal.dart';
-import 'components/card.dart';
+import 'components/bar_item.dart';
 
 import 'page/produtos.dart';
 import 'page/listas.dart';
@@ -33,8 +34,74 @@ class MeuGuiaCompras extends StatefulWidget {
 
 class _ListSubTotalState extends State<MeuGuiaCompras> {
   int _currentIndex = 0;
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _lastWords = '';
 
   final List<Widget> _pages = [MeusProdutos(), MinhasListas()];
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  void _selectedTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void startListening() async {
+    bool available = await _speech.initialize(
+      onStatus: (status) => {},
+      onError: (error) => ()
+    );
+
+    if (available) {
+      setState(() => _isListening = true);
+      _speech.listen(
+        onResult: (result) {
+          setState(() {
+            _lastWords = result.recognizedWords;
+          });
+
+          processCommand(_lastWords);
+        }
+      );
+    }
+  }
+
+  void processCommand(String command) {
+    command = command.toLowerCase();
+
+
+    if (command.contains('adicionar')) {
+      final regex = RegExp(r'adicionar (.+)');
+      final match = regex.firstMatch(command);
+
+      if (match != null) {
+        final item = match.group(1);
+        if (item != null && item.isNotEmpty)  {
+          var produtos = Hive.box('produtos');
+          Map<String, dynamic> newItem = {
+            'nome': item,
+            'preco': 0.0,
+            'quantidade': 0.0,
+            'categoria': '',
+            'promocao': false,
+          };
+          produtos.add(newItem);
+        }
+      }
+
+    }
+  }
+
+  void stopListening() {
+    _speech.stop();
+    super.dispose();
+  }
 
   String formatValue(double value) {
     return NumberFormat.currency(
@@ -118,8 +185,14 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.mic),
+            onPressed: _isListening ? startListening : stopListening,
+            tooltip: "Adicionar item por fala!"
+          ),
+          IconButton(
             icon: Icon(Icons.save),
             onPressed: () => _showSaveDialog(context),
+            tooltip: "Salvar Lista!"
           ),
         ],
       ),
@@ -134,58 +207,19 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
         },
         tooltip: 'Adicionar Item',
         shape: CircleBorder(),
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         child: Icon(
           Icons.add,
           color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        color: Theme.of(context).colorScheme.primaryContainer,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-              decoration: BoxDecoration(
-                // shape: BoxShape.circle,
-                color: _currentIndex == 0
-                    ? Theme.of(context).colorScheme.surface
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: IconButton(
-                onPressed: () => setState(() => _currentIndex = 0),
-                icon: Icon(
-                  Icons.shopping_cart,
-                  color: _currentIndex == 0
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-              decoration: BoxDecoration(
-                // shape: BoxShape.circle,
-                color: _currentIndex == 1
-                    ? Theme.of(context).colorScheme.surface
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: IconButton(
-                onPressed: () => setState(() => _currentIndex = 1),
-                icon: Icon(
-                  Icons.view_list,
-                  color: _currentIndex == 1
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.surface,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: CustomAppBar(
+        onTabSelected: _selectedTab,
+        items: [
+          CustomAppBarItem(icon: Icons.shopping_cart),
+          CustomAppBarItem(icon: Icons.list),
+        ],
+      )
     );
   }
 }
