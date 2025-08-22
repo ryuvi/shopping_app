@@ -28,9 +28,14 @@ void main() async {
       create: (_) => ListNameState(),
       child: MaterialApp(
         theme: ThemeData.from(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen, brightness: Brightness.light),
           useMaterial3: true,
         ),
+        darkTheme: ThemeData.from(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
+          useMaterial3: true,
+        ),
+        themeMode: ThemeMode.system,
         home: MeuGuiaCompras(),
       ),
     )
@@ -136,7 +141,7 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
     final Box listasBox = Hive.box("listas");
     final Box produtosBox = Hive.box("produtos");
 
-    List currentItems = produtosBox.values.toList();
+    var currentItems = produtosBox.values.toList();
 
     await listasBox.put(name, currentItems);
     await produtosBox.clear();
@@ -189,10 +194,14 @@ class _ListSubTotalState extends State<MeuGuiaCompras> {
     );
   }
 
+  bool isDarkMode(BuildContext context) {
+    return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrange[50],
+      backgroundColor: isDarkMode(context) ? Colors.deepOrange[900]!.withValues(alpha: .5) : Colors.deepOrange[100],
       appBar: AppBar(
         title: Text(
           'Meu Guia de Compras',
